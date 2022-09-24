@@ -12,26 +12,35 @@ const initPage = async () => {
     devtools: true,
   });
   const page = await browser.newPage();
-  await page.goto("https://mexitel.sre.gob.mx/");
+  await page.goto("https://citas.sre.gob.mx/");
   await delay(2000);
   return page;
 };
 
-const closeModal = async (page, options = {}) => {
+const closeOfficeTypeModal = async (page, options = {}) => {
+  await page.waitForSelector("button.btn.btn-primary.btn-sm", { visible: true });
+  await delay(4000);
+  await page.click("button.btn.btn-primary.btn-sml", options);
+};
+
+const closeTermsModal = async (page, options = {}) => {
   await page.waitForSelector("svg.bi.bi-x-circle", { visible: true });
   await delay(4000);
   await page.click("svg.bi.bi-x-circle", options);
 };
 
 const signIn = async (page) => {
-  await page.type("input[name=email]", "<your email>");
+  // enter page credentials
+  await page.type("input[name=email]", "meganbethring@gmail.com");
   await delay(1200);
-  await page.type("input[name=password]", "<your password>");
+  await page.type("input[name=password]", "uxr_mdh9rnp-pcm3HAY");
+  // this selecting the modal that pops up?
   await delay(1000);
+  // agree to terms box
   await page.click("input[type=checkbox]");
+  await closeTermsModal(page);
   await delay(1000);
   await page.click("button.btn.btn-primary.pull-right");
-  await closeModal(page);
 };
 
 const schedule = async (p) => {
@@ -41,7 +50,15 @@ const schedule = async (p) => {
 
 const enterZipCode = async (p) => {
   await delay(1000);
-  await p.type("[name=postalCode]", "<your zip code>");
+  // 85711 === Tuscon, AZ
+  // 85364 === Yuma, AZ
+  // 75247 === Dallas, TX
+  // 79845 == Presidio, TX
+  // 78205 === San Antonio, TX
+  // 78741 === Austin, TX
+  // 77004 == Houston, TX
+  // 94105 == SF, CA
+  await p.type("[name=postalCode]", "94105");
 };
 
 const search = async (p) => {
@@ -93,6 +110,7 @@ const getRandomInt = (min, max) => {
   await page.waitForSelector("input[name=email]");
   console.log("Page rendered.");
 
+  await closeOfficeTypeModal(page)
   console.log("Signing in...");
   await signIn(page);
   let isAppointmentFound;
